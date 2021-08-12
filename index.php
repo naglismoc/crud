@@ -1,70 +1,31 @@
 <?php
 
-
-
-session_start();
-if( !isset( $_SESSION['zoo'])  ){
-    $_SESSION['zoo'] = [];
-    $_SESSION['id'] = 1;
-}
-
-// echo "<pre>";
-//     print_r($_SESSION);
-// echo "</pre>";
-// $_SESSION['id'] = 1;
-
+include('./functions.php');
+//fill form for edit
 if($_SERVER['REQUEST_METHOD'] == "GET" && isset($_GET['id'])){
-    foreach ($_SESSION['zoo'] as $entry) {
-       if($entry['id'] == $_GET['id']){
-            $animal = $entry;
-            break;
-       }
-    }
+    $animal = edit();
 }
 
-// ($_SERVER['REQUEST_METHOD'] == "GET" && isset($_GET['id'])) ? "true" : "false";
-
+//store
 if($_SERVER['REQUEST_METHOD'] == "POST" && !isset($_POST['id'])){
-    // $animal = [];
-    $animal['id'] = $_SESSION['id'];
-    $animal['species'] = $_POST['species'];
-    $animal['name'] = $_POST['name'];
-    $animal['age'] = $_POST['age'];
-
-    $_SESSION['id']++;
-    
-    $_SESSION['zoo'][] = $animal;
+    store();
     header("location:./");
     die;
 }
 
-
+//destroy
 if($_SERVER['REQUEST_METHOD'] == "POST" && !isset($_POST['species'])){
-    foreach ($_SESSION['zoo'] as $key => $animal) {
-        if($animal['id'] == $_POST['id']){
-         unset($_SESSION['zoo'][$key]);
-         header("location:./");
-         die;
-        }  
-    }
-
+    destroy();
     header("location:./");
-    die;
-    }
-
-if($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['id'])  ){
-   foreach ($_SESSION['zoo'] as &$animal) {
-       if($animal['id'] == $_POST['id']){
-        $animal['species'] = $_POST['species'];
-        $animal['name'] = $_POST['name'];
-        $animal['age'] = $_POST['age'];
-        header("location:./");
-        die;
-       }  
-   }
+    die; 
 }
 
-
+//update    
+if($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['id'])  ){
+    update();
+    header("location:./");
+    die;
+}
 
 
 ?>
@@ -82,6 +43,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['id'])  ){
     <title>Document</title>
 </head>
 <body>
+
     <form class="form" action="" method="POST">
         <div class="form-group row">
             <label class="col-sm-2 col-form-label" >Gyvūno rūšis</label>
@@ -124,9 +86,9 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['id'])  ){
         </tr>
 
 
-        <?php foreach ($_SESSION['zoo'] as $animal) {  ?>
+        <?php $count = 0; foreach ($_SESSION['zoo'] as $animal) {  ?>
             <tr>
-            <td> <?= $animal['id']  ?> </td>
+            <td> <?= ++$count."/".$animal['id']  ?> </td>
                 <td> <?= $animal['species']  ?> </td>
                 <td> <?= $animal['name']  ?> </td>
                 <td> <?= $animal['age']  ?> </td>
